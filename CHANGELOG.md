@@ -22,6 +22,7 @@ The format is a modified version of [Keep a Changelog](https://keepachangelog.co
 - EPUB parser no longer includes novel title in chapter title [@mrissaoussama](https://github.com/mrissaoussama) [#422](https://github.com/tsundoku-otaku/tsundoku/pull/422)
 - Fix extension restoring from cold state [@mrissaoussama](https://github.com/mrissaoussama) [#422](https://github.com/tsundoku-otaku/tsundoku/pull/422)
 - Fix manga custom metadata reset on refresh [@mrissaoussama](https://github.com/mrissaoussama) [#423](https://github.com/tsundoku-otaku/tsundoku/pull/423)
+- Fix novel reader crash on Android 8.0/8.1 (API 26/27) caused by android.text.PrecomputedText in NovelViewer [@RibatTRW](https://github.com/RibatTRW)
 
 
 ## [v0.3.3] - 2026-08-30
