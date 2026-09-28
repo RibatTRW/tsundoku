@@ -679,15 +679,8 @@
 
     <!-- Excerpt Vault -->
     <string name="excerpt_vault_empty">No excerpts saved yet. Select text in the reader and save it to the vault.</string>
-    <string name="excerpt_vault_search_hint">Search excerpts…</string>
-    <string name="excerpt_vault_all_categories">All</string>
     <string name="excerpt_vault_delete_confirm">Delete this excerpt?</string>
-    <string name="excerpt_vault_deleted">Excerpt deleted</string>
     <string name="excerpt_vault_saved">Excerpt saved to vault</string>
-    <string name="excerpt_vault_save_title">Save excerpt</string>
-    <string name="excerpt_vault_category_label">Category</string>
-    <string name="excerpt_vault_category_hint">e.g. funny, wisdom…</string>
-    <string name="excerpt_vault_note_label">Note (optional)</string>
     <string name="excerpt_vault_open_chapter">Open chapter</string>
     <string name="excerpt_vault_chapter_unavailable">Chapter is no longer available</string>
 

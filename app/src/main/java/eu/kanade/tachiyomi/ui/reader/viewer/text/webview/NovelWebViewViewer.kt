@@ -3284,16 +3284,13 @@ class NovelWebViewViewer(val activity: ReaderActivity) : Viewer {
     }
 
     /**
-     * Handle the "Save excerpt" action from text selection menu. Reuses the same
-     * selection/JS-bridge mechanism as Remember; the activity snapshots the novel
-     * and chapter context for the Excerpt Vault.
+     * Handle the "Save excerpt" action from text selection menu, reading the selection
+     * through the same JS bridge as Remember.
      */
     private fun onSaveExcerptSelectedText(actionMode: ActionMode? = null) {
-        readSelectedText(actionMode) { selectedText, paragraphIndex ->
+        readSelectedText(actionMode) { selectedText, _ ->
             if (!selectedText.isNullOrBlank()) {
-                pendingSelectedText = selectedText
-                pendingParagraphIndex = paragraphIndex
-                activity.onSaveExcerptSelectedText()
+                activity.viewModel.saveExcerpt(selectedText)
                 clearTextSelection()
             } else {
                 activity.toast("No text selected")

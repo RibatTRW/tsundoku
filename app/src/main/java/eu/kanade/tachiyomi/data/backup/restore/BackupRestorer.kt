@@ -119,9 +119,6 @@ class BackupRestorer(
         if (options.libraryEntries) {
             restoreAmount += summary.mangaCount
         }
-        if (options.libraryEntries && summary.backupExcerpts.isNotEmpty()) {
-            restoreAmount += 1
-        }
         if (options.categories) {
             restoreAmount += 1
         }
@@ -155,7 +152,7 @@ class BackupRestorer(
             if (options.libraryEntries) {
                 restoreMangaStream(uri, if (options.categories) summary.backupCategories else emptyList(), options)
             }
-            if (options.libraryEntries && summary.backupExcerpts.isNotEmpty()) {
+            if (options.libraryEntries) {
                 restoreExcerpts(summary.backupExcerpts)
             }
             if (options.extensionStores) {
@@ -249,14 +246,6 @@ class BackupRestorer(
     private fun CoroutineScope.restoreExcerpts(backupExcerpts: List<BackupExcerpt>) = launch {
         ensureActive()
         excerptsRestorer(backupExcerpts)
-
-        val progress = restoreProgress.incrementAndFetch()
-        notifier.showRestoreProgress(
-            context.stringResource(MR.strings.label_excerpt_vault),
-            progress,
-            restoreAmount,
-            isSync,
-        )
     }
 
     private fun CoroutineScope.restoreCategories(backupCategories: List<BackupCategory>) = launch {

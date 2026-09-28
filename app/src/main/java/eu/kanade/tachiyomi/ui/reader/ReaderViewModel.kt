@@ -1551,11 +1551,6 @@ class ReaderViewModel @JvmOverloads constructor(
         class Error(val error: Throwable) : SaveImageResult
     }
 
-    sealed interface SaveExcerptResult {
-        data object Success : SaveExcerptResult
-        data class Error(val error: Throwable) : SaveExcerptResult
-    }
-
     /**
      * Starts the service that updates the last chapter read in sync services. This operation
      * will run in a background thread and errors are ignored.
@@ -1848,61 +1843,36 @@ class ReaderViewModel @JvmOverloads constructor(
         quoteManager.reorderQuotes(sourceName, manga.title, quotes)
     }
 
-    // Excerpt Vault functionality (issue #53): a dedicated, backup-able section for
-    // reader-kept passages, separate from per-novel quotes/notes.
-    val excerptCategories: StateFlow<List<String>> = excerptRepository.getCategoriesAsFlow()
-        .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
-
-    fun openSaveExcerptDialog(draft: ExcerptDraft) {
-        mutableState.update { it.copy(dialog = Dialog.SaveExcerpt(draft)) }
-    }
-
-    fun saveExcerpt(category: String, note: String) {
-        val draft = (state.value.dialog as? Dialog.SaveExcerpt)?.draft ?: return
-        closeDialog()
+    /**
+     * Saves [text] with the current novel and chapter to the Excerpt Vault (issue #53).
+     * [Event.ExcerptSaved] reports the outcome only after the insert has completed.
+     */
+    fun saveExcerpt(text: String) {
+        val manga = manga ?: return
+        val chapter = state.value.currentChapter?.chapter ?: return
+        val excerpt = Excerpt(
+            text = text.trim(),
+            mangaTitle = manga.title,
+            chapterName = chapter.name,
+            chapterNumber = chapter.chapter_number.toDouble(),
+            sourceId = manga.source,
+            mangaUrl = manga.url,
+            chapterUrl = chapter.url,
+            createdAt = System.currentTimeMillis(),
+        )
         viewModelScope.launchNonCancellable {
-            try {
-                excerptRepository.insert(
-                    Excerpt.create(
-                        text = draft.text,
-                        mangaTitle = draft.mangaTitle,
-                        chapterName = draft.chapterName,
-                        chapterNumber = draft.chapterNumber,
-                        mangaId = draft.mangaId,
-                        chapterId = draft.chapterId,
-                        sourceId = draft.sourceId,
-                        mangaUrl = draft.mangaUrl,
-                        chapterUrl = draft.chapterUrl,
-                        category = category.trim(),
-                        note = note.trim(),
-                    ),
-                )
-                eventChannel.send(Event.SaveExcerpt(SaveExcerptResult.Success))
+            val error = try {
+                excerptRepository.insert(listOf(excerpt))
+                null
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Throwable) {
                 logcat(LogPriority.ERROR, e)
-                eventChannel.send(Event.SaveExcerpt(SaveExcerptResult.Error(e)))
+                e
             }
+            eventChannel.send(Event.ExcerptSaved(error))
         }
     }
-
-    /**
-     * Snapshot of the passage being saved to the Excerpt Vault, taken when the
-     * selection menu is used so a chapter change while the dialog is open cannot
-     * misattribute the excerpt.
-     */
-    data class ExcerptDraft(
-        val text: String,
-        val mangaId: Long?,
-        val mangaTitle: String,
-        val sourceId: Long,
-        val mangaUrl: String,
-        val chapterId: Long?,
-        val chapterName: String,
-        val chapterNumber: Double,
-        val chapterUrl: String,
-    )
 
     sealed interface Dialog {
         data object Loading : Dialog
@@ -1911,7 +1881,6 @@ class ReaderViewModel @JvmOverloads constructor(
         data object OrientationModeSelect : Dialog
         data object TranslationLanguageSelect : Dialog
         data class PageActions(val page: ReaderPage) : Dialog
-        data class SaveExcerpt(val draft: ExcerptDraft) : Dialog
     }
 
     sealed interface Event {
@@ -1924,6 +1893,6 @@ class ReaderViewModel @JvmOverloads constructor(
         data class SavedImage(val result: SaveImageResult) : Event
         data class ShareImage(val uri: Uri, val page: ReaderPage) : Event
         data class CopyImage(val uri: Uri) : Event
-        data class SaveExcerpt(val result: SaveExcerptResult) : Event
+        data class ExcerptSaved(val error: Throwable?) : Event
     }
 }

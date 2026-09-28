@@ -1,73 +1,33 @@
--- Excerpt Vault (issue #53): reader-kept passages with their novel and chapter,
--- browsable without the novel being in the library.
+-- Excerpt Vault (issue #53): reader-kept passages with their novel and chapter.
+-- Titles and urls are copied so an excerpt outlives the novel's library entry.
 CREATE TABLE excerpts(
     _id INTEGER NOT NULL PRIMARY KEY,
     excerpt_text TEXT NOT NULL,
     manga_title TEXT NOT NULL,
     chapter_name TEXT NOT NULL,
-    chapter_number REAL NOT NULL DEFAULT -1,
-    manga_id INTEGER,
-    chapter_id INTEGER,
-    source_id INTEGER NOT NULL DEFAULT -1,
-    manga_url TEXT NOT NULL DEFAULT '',
-    chapter_url TEXT NOT NULL DEFAULT '',
-    category TEXT NOT NULL DEFAULT '',
-    note TEXT NOT NULL DEFAULT '',
-    created_at INTEGER NOT NULL
+    chapter_number REAL NOT NULL,
+    source_id INTEGER NOT NULL,
+    manga_url TEXT NOT NULL,
+    chapter_url TEXT NOT NULL,
+    created_at INTEGER NOT NULL,
+    UNIQUE (created_at, excerpt_text)
 );
-
-CREATE INDEX excerpts_created_at_index ON excerpts(created_at DESC);
-CREATE INDEX excerpts_category_index ON excerpts(category);
-
-getExcerpt:
-SELECT *
-FROM excerpts
-WHERE _id = :id
-LIMIT 1;
 
 getExcerpts:
 SELECT *
 FROM excerpts
 ORDER BY created_at DESC;
 
-searchExcerpts:
-SELECT *
-FROM excerpts
-WHERE excerpt_text LIKE ('%' || :query || '%') ESCAPE '\'
-OR manga_title LIKE ('%' || :query || '%') ESCAPE '\'
-OR chapter_name LIKE ('%' || :query || '%') ESCAPE '\'
-OR category LIKE ('%' || :query || '%') ESCAPE '\'
-OR note LIKE ('%' || :query || '%') ESCAPE '\'
-ORDER BY created_at DESC;
-
-getExcerptCategories:
-SELECT DISTINCT category
-FROM excerpts
-WHERE category != ''
-ORDER BY category;
-
-findDuplicate:
-SELECT _id
-FROM excerpts
-WHERE excerpt_text = :text
-AND manga_title = :mangaTitle
-AND chapter_name = :chapterName
-AND created_at = :createdAt
-LIMIT 1;
-
+-- OR IGNORE keeps restoring the same backup twice from duplicating entries.
 insert:
-INSERT INTO excerpts(
+INSERT OR IGNORE INTO excerpts(
     excerpt_text,
     manga_title,
     chapter_name,
     chapter_number,
-    manga_id,
-    chapter_id,
     source_id,
     manga_url,
     chapter_url,
-    category,
-    note,
     created_at
 )
 VALUES (
@@ -75,19 +35,12 @@ VALUES (
     :mangaTitle,
     :chapterName,
     :chapterNumber,
-    :mangaId,
-    :chapterId,
     :sourceId,
     :mangaUrl,
     :chapterUrl,
-    :category,
-    :note,
     :createdAt
 );
 
 delete:
 DELETE FROM excerpts
 WHERE _id = :excerptId;
-
-selectLastInsertedRowId:
-SELECT last_insert_rowid();

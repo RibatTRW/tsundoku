@@ -2191,8 +2191,9 @@ class NovelViewer(val activity: ReaderActivity) : Viewer {
     }
 
     private fun onSaveExcerptSelectedText() {
-        if (getSelectedText() != null) {
-            activity.onSaveExcerptSelectedText()
+        val text = getSelectedText()
+        if (!text.isNullOrBlank()) {
+            activity.viewModel.saveExcerpt(text)
             clearTextSelection()
         } else {
             activity.toast("No text selected")
