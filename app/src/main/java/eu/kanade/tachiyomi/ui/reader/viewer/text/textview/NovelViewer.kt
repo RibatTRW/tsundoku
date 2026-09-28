@@ -1825,7 +1825,12 @@ class NovelViewer(val activity: ReaderActivity) : Viewer {
         // IllegalArgumentException. Strip it back to a plain Spannable so TextView measures
         // against the live paint instead.
         val currentText = textView.text
-        if (currentText is PrecomputedText) {
+        // android.text.PrecomputedText only exists on API 28+. The SDK check
+        // short-circuits first so the class is never resolved on older devices,
+        // where TextViewCompat never sets platform precomputed text anyway.
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P &&
+            currentText is PrecomputedText
+        ) {
             textView.text = SpannableStringBuilder(currentText)
         }
     }
