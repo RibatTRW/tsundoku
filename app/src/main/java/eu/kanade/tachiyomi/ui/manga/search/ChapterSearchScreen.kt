@@ -40,6 +40,7 @@ import tachiyomi.source.local.isLocal
 import tachiyomi.source.local.isLocalNovel
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
+import java.util.concurrent.atomic.AtomicLong
 import java.util.regex.PatternSyntaxException
 import kotlin.coroutines.cancellation.CancellationException
 
@@ -88,6 +89,7 @@ class ChapterSearchScreen(
     ) : StateViewModel<State>(State()) {
 
         private var searchJob: Job? = null
+        private val searchGeneration = AtomicLong()
         private var source: Source? = null
 
         init {
@@ -123,6 +125,7 @@ class ChapterSearchScreen(
 
         fun search() {
             searchJob?.cancel()
+            val generation = searchGeneration.incrementAndGet()
             val current = state.value
             val query = current.query
             if (query.isEmpty()) {
@@ -176,6 +179,7 @@ class ChapterSearchScreen(
                         null
                     }
                     mutableState.update { state ->
+                        if (searchGeneration.get() != generation) return@update state
                         state.copy(
                             searchedCount = index + 1,
                             failedCount = state.failedCount + if (matches == null) 1 else 0,
@@ -187,7 +191,9 @@ class ChapterSearchScreen(
                         )
                     }
                 }
-                mutableState.update { it.copy(isSearching = false) }
+                mutableState.update {
+                    if (searchGeneration.get() != generation) it else it.copy(isSearching = false)
+                }
             }
         }
 
