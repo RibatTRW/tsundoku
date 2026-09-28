@@ -1573,6 +1573,7 @@ class MangaViewModel(
             val contentReader = ChapterContentReader(context, Injekt.get<DownloadProvider>())
             var totalWords = 0L
             var countedChapters = 0
+            var unreadableChapters = 0
             chapters.forEachIndexed { index, chapter ->
                 ensureActive()
                 val content = try {
@@ -1590,6 +1591,8 @@ class MangaViewModel(
                 if (content != null) {
                     totalWords += WordDensity.countWords(content)
                     countedChapters++
+                } else {
+                    unreadableChapters++
                 }
                 updateWordCountDialog { it.copy(checkedChapters = index + 1) }
             }
@@ -1597,6 +1600,7 @@ class MangaViewModel(
                 totalWords = totalWords,
                 countedChapters = countedChapters,
                 totalChapters = totalChapters,
+                unreadableChapters = unreadableChapters,
             )
             updateWordCountDialog { it.copy(result = result) }
         }

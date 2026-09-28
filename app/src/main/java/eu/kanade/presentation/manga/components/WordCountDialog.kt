@@ -91,15 +91,22 @@ private fun WordCountResult(result: WordDensity) {
                 numberFormat.format(result.totalChapters),
             ),
         )
-        if (result.countedChapters < result.totalChapters) {
-            Text(
+        if (result.notDownloadedChapters > 0) {
+            CoverageNote(
                 text = stringResource(
-                    TDMR.strings.word_count_partial,
-                    numberFormat.format(result.countedChapters),
+                    TDMR.strings.word_count_not_downloaded,
+                    numberFormat.format(result.notDownloadedChapters),
                     numberFormat.format(result.totalChapters),
                 ),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        if (result.unreadableChapters > 0) {
+            CoverageNote(
+                text = stringResource(
+                    TDMR.strings.word_count_unreadable_some,
+                    numberFormat.format(result.unreadableChapters),
+                    numberFormat.format(result.totalChapters),
+                ),
             )
         }
         Row(
@@ -115,6 +122,15 @@ private fun WordCountResult(result: WordDensity) {
             )
         }
     }
+}
+
+@Composable
+private fun CoverageNote(text: String) {
+    Text(
+        text = text,
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+    )
 }
 
 @Composable

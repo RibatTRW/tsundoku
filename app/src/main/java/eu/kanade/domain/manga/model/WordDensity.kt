@@ -8,12 +8,18 @@ import org.jsoup.Jsoup
  * @property totalWords words across every counted chapter.
  * @property countedChapters chapters whose content could be read and counted.
  * @property totalChapters every chapter of the entry, downloaded or not.
+ * @property unreadableChapters chapters that were available but whose content could not be read.
  */
 data class WordDensity(
     val totalWords: Long,
     val countedChapters: Int,
     val totalChapters: Int,
+    val unreadableChapters: Int = 0,
 ) {
+    /** Chapters left out because they are not downloaded. */
+    val notDownloadedChapters: Int
+        get() = (totalChapters - countedChapters - unreadableChapters).coerceAtLeast(0)
+
     /** Average words per counted chapter, the novel's word density. */
     val averageWords: Long
         get() = if (countedChapters == 0) 0 else totalWords / countedChapters

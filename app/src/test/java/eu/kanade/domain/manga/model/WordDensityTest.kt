@@ -32,6 +32,16 @@ class WordDensityTest {
     }
 
     @Test
+    fun `unreadable chapters are kept apart from chapters that are not downloaded`() {
+        val density = WordDensity(totalWords = 1500, countedChapters = 3, totalChapters = 10, unreadableChapters = 2)
+
+        assertEquals(500, density.averageWords)
+        assertEquals(5, density.notDownloadedChapters)
+        val allAvailable = WordDensity(totalWords = 900, countedChapters = 3, totalChapters = 5, unreadableChapters = 2)
+        assertEquals(0, allAvailable.notDownloadedChapters)
+    }
+
+    @Test
     fun `densityTier follows 400 word first tier then 100 word steps`() {
         assertEquals(1, WordDensity.densityTier(0))
         assertEquals(1, WordDensity.densityTier(400))
