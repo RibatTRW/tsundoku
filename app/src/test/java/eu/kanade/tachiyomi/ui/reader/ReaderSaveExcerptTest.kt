@@ -4,7 +4,6 @@ import androidx.lifecycle.SavedStateHandle
 import eu.kanade.domain.base.BasePreferences
 import eu.kanade.domain.manga.interactor.SetMangaViewerFlags
 import eu.kanade.domain.source.interactor.GetIncognitoState
-import tachiyomi.domain.source.service.SourceManager
 import eu.kanade.domain.track.interactor.TrackChapter
 import eu.kanade.domain.track.service.TrackPreferences
 import eu.kanade.tachiyomi.data.download.DownloadManager
@@ -44,6 +43,7 @@ import tachiyomi.domain.history.interactor.UpsertHistory
 import tachiyomi.domain.library.service.LibraryPreferences
 import tachiyomi.domain.manga.interactor.GetLibraryManga
 import tachiyomi.domain.manga.interactor.GetManga
+import tachiyomi.domain.source.service.SourceManager
 import tachiyomi.domain.translation.service.TranslationPreferences
 
 /**
