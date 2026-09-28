@@ -98,7 +98,11 @@ class ExcerptVaultScreen : Screen() {
                         excerpt = excerpt,
                         onOpen = {
                             scope.launch {
-                                val ids = viewModel.findChapter(excerpt)
+                                val ids = try {
+                                    viewModel.findChapter(excerpt)
+                                } catch (_: Exception) {
+                                    null
+                                }
                                 if (ids == null) {
                                     context.toast(MR.strings.excerpt_vault_chapter_unavailable)
                                 } else {

@@ -375,7 +375,11 @@ class ReaderActivity : BaseActivity() {
                         onSetAsCoverResult(event.result)
                     }
                     is ReaderViewModel.Event.ExcerptSaved -> {
-                        if (event.error == null) toast(MR.strings.excerpt_vault_saved) else toast(event.error.message)
+                        if (event.error == null) {
+                            toast(MR.strings.excerpt_vault_saved)
+                        } else {
+                            toast(event.error.message?.ifBlank { null } ?: stringResource(MR.strings.unknown_error))
+                        }
                     }
                 }
             }
