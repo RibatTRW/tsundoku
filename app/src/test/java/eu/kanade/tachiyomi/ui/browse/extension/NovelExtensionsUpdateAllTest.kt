@@ -3,7 +3,6 @@ package eu.kanade.tachiyomi.ui.browse.extension
 import eu.kanade.tachiyomi.extension.model.Extension
 import mihon.domain.extension.model.ExtensionStore
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
@@ -94,55 +93,36 @@ class NovelExtensionsUpdateAllTest {
     )
 
     @Test
-    fun `installed js plugin with update is an update-all target`() {
-        assertTrue(installedJsPlugin(isInstalled = true, hasUpdate = true).isUpdateAllTarget())
-    }
-
-    @Test
-    fun `installed js plugin without update is not an update-all target`() {
-        assertFalse(installedJsPlugin(isInstalled = true, hasUpdate = false).isUpdateAllTarget())
-    }
-
-    @Test
-    fun `not installed js plugin is not an update-all target`() {
-        assertFalse(availableJsPlugin().isUpdateAllTarget())
-    }
-
-    @Test
-    fun `installed apk extension with update is an update-all target`() {
-        assertTrue(installedApk(hasUpdate = true).isUpdateAllTarget())
-    }
-
-    @Test
-    fun `installed apk extension without update is not an update-all target`() {
-        assertFalse(installedApk(hasUpdate = false).isUpdateAllTarget())
-    }
-
-    @Test
-    fun `available and untrusted extensions are never update-all targets`() {
-        assertFalse(availableApk().isUpdateAllTarget())
-        assertFalse(untrusted().isUpdateAllTarget())
-    }
-
-    @Test
-    fun `update all selects every pending novel update and nothing else`() {
+    fun `update all plan routes every pending novel update to its install path`() {
         val displayed = listOf(
             installedJsPlugin(name = "Fake Novel A"),
             installedJsPlugin(name = "Fake Novel B"),
-            installedJsPlugin(name = "Fake Novel C"),
             installedApk(hasUpdate = true),
             installedJsPlugin(name = "Up to date", hasUpdate = false),
             installedApk(hasUpdate = false),
             availableJsPlugin(),
-            availableApk(),
-            untrusted(),
         )
 
-        val targets = displayed.filter { it.isUpdateAllTarget() }
+        val plan = displayed.toUpdateAllPlan()
 
-        assertEquals(
-            setOf("Fake Novel A", "Fake Novel B", "Fake Novel C", "Some Novel"),
-            targets.map { it.name }.toSet(),
-        )
+        assertEquals(listOf("Fake Novel A", "Fake Novel B"), plan.jsPluginUpdates.map { it.name })
+        assertEquals(listOf("Some Novel"), plan.apkUpdates.map { it.name })
+    }
+
+    @Test
+    fun `update all plan with only js plugin updates pending is not empty`() {
+        val plan = listOf(installedJsPlugin(name = "Fake Novel A"), installedJsPlugin(name = "Fake Novel B"))
+            .toUpdateAllPlan()
+
+        assertEquals(2, plan.jsPluginUpdates.size)
+        assertTrue(plan.apkUpdates.isEmpty())
+    }
+
+    @Test
+    fun `update all plan excludes available and untrusted extensions`() {
+        val plan = listOf(availableApk(), untrusted()).toUpdateAllPlan()
+
+        assertTrue(plan.apkUpdates.isEmpty())
+        assertTrue(plan.jsPluginUpdates.isEmpty())
     }
 }
