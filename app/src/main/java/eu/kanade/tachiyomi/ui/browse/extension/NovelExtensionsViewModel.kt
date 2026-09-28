@@ -236,9 +236,14 @@ class NovelExtensionsViewModel(
         viewModelScope.launchIO {
             state.value.items.values.flatten()
                 .map { it.extension }
-                .filterIsInstance<Extension.Installed>()
-                .filter { it.hasUpdate }
-                .forEach(::updateExtension)
+                .filter { it.isUpdateAllTarget() }
+                .forEach {
+                    when (it) {
+                        is Extension.Installed -> updateExtension(it)
+                        is Extension.JsPlugin -> installJsPlugin(it)
+                        else -> {}
+                    }
+                }
         }
     }
 
@@ -326,4 +331,14 @@ class NovelExtensionsViewModel(
             extensionManager.trust(extension)
         }
     }
+}
+
+/**
+ * Whether "Update all" should act on this extension: an installed extension (APK-based or
+ * JS plugin) with an available update. Available and untrusted entries are never targets.
+ */
+internal fun Extension.isUpdateAllTarget(): Boolean = when (this) {
+    is Extension.Installed -> hasUpdate
+    is Extension.JsPlugin -> isInstalled && hasUpdate
+    else -> false
 }
