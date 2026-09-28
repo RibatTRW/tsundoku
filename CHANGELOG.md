@@ -13,6 +13,7 @@ The format is a modified version of [Keep a Changelog](https://keepachangelog.co
 ## [Unreleased]
 ### Added
 - Webview paged reader [@mrissaoussama](https://github.com/mrissaoussama) [#420](https://github.com/tsundoku-otaku/tsundoku/pull/420)
+- Search text (optionally regex) across all downloaded chapters of an entry [#57](https://github.com/tsundoku-otaku/tsundoku/issues/57)
 
 
 ### Improved
