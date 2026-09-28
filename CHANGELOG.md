@@ -24,6 +24,7 @@ The format is a modified version of [Keep a Changelog](https://keepachangelog.co
 - Fix extension restoring from cold state [@mrissaoussama](https://github.com/mrissaoussama) [#422](https://github.com/tsundoku-otaku/tsundoku/pull/422)
 - Fix manga custom metadata reset on refresh [@mrissaoussama](https://github.com/mrissaoussama) [#423](https://github.com/tsundoku-otaku/tsundoku/pull/423)
 - Font family selector dialog is now scrollable and long font names no longer squash the setting label [#427](https://github.com/tsundoku-otaku/tsundoku/issues/427)
+- Fix novel reader crash on Android 8.0/8.1 (API 26/27) caused by android.text.PrecomputedText in NovelViewer [@RibatTRW](https://github.com/RibatTRW) [#432](https://github.com/tsundoku-otaku/tsundoku/issues/432)
 
 
 ## [v0.3.3] - 2026-08-30
