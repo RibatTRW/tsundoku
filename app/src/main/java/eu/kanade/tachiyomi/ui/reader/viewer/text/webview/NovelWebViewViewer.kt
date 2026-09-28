@@ -91,6 +91,7 @@ class NovelWebViewViewer(val activity: ReaderActivity) : Viewer {
 
     private companion object {
         const val REMEMBER_MENU_ITEM_ID = 0xBEEF // arbitrary unique ID
+        const val SAVE_EXCERPT_MENU_ITEM_ID = 0xBEF0 // arbitrary unique ID
         const val ATTR_DATA_EDITABLE = "data-tsundoku-editable"
         const val ID_EDIT_MODE_STYLE = "edit-mode-style"
         const val SEEK_ECHO_SUPPRESS_MS = 350L
@@ -607,6 +608,14 @@ class NovelWebViewViewer(val activity: ReaderActivity) : Viewer {
                             )
                                 .setIcon(android.R.drawable.ic_menu_save)
                                 .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM)
+                            menu.add(
+                                Menu.NONE,
+                                SAVE_EXCERPT_MENU_ITEM_ID,
+                                Menu.NONE,
+                                activity.stringResource(TDMR.strings.action_save_excerpt),
+                            )
+                                .setIcon(android.R.drawable.ic_menu_save)
+                                .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM)
                             return result
                         }
                         override fun onPrepareActionMode(mode: ActionMode, menu: Menu): Boolean =
@@ -614,6 +623,10 @@ class NovelWebViewViewer(val activity: ReaderActivity) : Viewer {
                         override fun onActionItemClicked(mode: ActionMode, item: MenuItem): Boolean {
                             if (item.itemId == REMEMBER_MENU_ITEM_ID) {
                                 onRememberSelectedText(mode) // pass mode in
+                                return true
+                            }
+                            if (item.itemId == SAVE_EXCERPT_MENU_ITEM_ID) {
+                                onSaveExcerptSelectedText(mode) // pass mode in
                                 return true
                             }
                             return callback.onActionItemClicked(mode, item)
@@ -637,6 +650,14 @@ class NovelWebViewViewer(val activity: ReaderActivity) : Viewer {
                             )
                                 .setIcon(android.R.drawable.ic_menu_save)
                                 .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM)
+                            menu.add(
+                                Menu.NONE,
+                                SAVE_EXCERPT_MENU_ITEM_ID,
+                                Menu.NONE,
+                                activity.stringResource(TDMR.strings.action_save_excerpt),
+                            )
+                                .setIcon(android.R.drawable.ic_menu_save)
+                                .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM)
                             return result
                         }
                         override fun onPrepareActionMode(mode: ActionMode, menu: Menu): Boolean =
@@ -644,6 +665,11 @@ class NovelWebViewViewer(val activity: ReaderActivity) : Viewer {
                         override fun onActionItemClicked(mode: ActionMode, item: MenuItem): Boolean {
                             if (item.itemId == REMEMBER_MENU_ITEM_ID) {
                                 onRememberSelectedText()
+                                mode.finish()
+                                return true
+                            }
+                            if (item.itemId == SAVE_EXCERPT_MENU_ITEM_ID) {
+                                onSaveExcerptSelectedText()
                                 mode.finish()
                                 return true
                             }
@@ -3245,6 +3271,37 @@ class NovelWebViewViewer(val activity: ReaderActivity) : Viewer {
      * Handle the "Remember" action from text selection menu
      */
     private fun onRememberSelectedText(actionMode: ActionMode? = null) {
+        readSelectedText(actionMode) { selectedText, paragraphIndex ->
+            if (!selectedText.isNullOrBlank()) {
+                pendingSelectedText = selectedText
+                pendingParagraphIndex = paragraphIndex
+                activity.onRememberSelectedText()
+                clearTextSelection()
+            } else {
+                activity.toast("No text selected")
+            }
+        }
+    }
+
+    /**
+     * Handle the "Save excerpt" action from text selection menu. Reuses the same
+     * selection/JS-bridge mechanism as Remember; the activity snapshots the novel
+     * and chapter context for the Excerpt Vault.
+     */
+    private fun onSaveExcerptSelectedText(actionMode: ActionMode? = null) {
+        readSelectedText(actionMode) { selectedText, paragraphIndex ->
+            if (!selectedText.isNullOrBlank()) {
+                pendingSelectedText = selectedText
+                pendingParagraphIndex = paragraphIndex
+                activity.onSaveExcerptSelectedText()
+                clearTextSelection()
+            } else {
+                activity.toast("No text selected")
+            }
+        }
+    }
+
+    private fun readSelectedText(actionMode: ActionMode? = null, onResult: (String?, Int?) -> Unit) {
         evaluateJavascriptSafe(
             """
         (function() {
@@ -3298,14 +3355,7 @@ class NovelWebViewViewer(val activity: ReaderActivity) : Viewer {
                     else -> raw.trim().ifEmpty { null }
                 }
 
-                if (!selectedText.isNullOrBlank()) {
-                    pendingSelectedText = selectedText
-                    pendingParagraphIndex = paragraphIndex
-                    activity.onRememberSelectedText()
-                    clearTextSelection()
-                } else {
-                    activity.toast("No text selected")
-                }
+                onResult(selectedText, paragraphIndex)
             }
         }
     }

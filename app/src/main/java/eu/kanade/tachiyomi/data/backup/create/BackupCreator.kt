@@ -6,11 +6,13 @@ import com.hippo.unifile.UniFile
 import eu.kanade.tachiyomi.BuildConfig
 import eu.kanade.tachiyomi.data.backup.BackupFileValidator
 import eu.kanade.tachiyomi.data.backup.create.creators.CategoriesBackupCreator
+import eu.kanade.tachiyomi.data.backup.create.creators.ExcerptsBackupCreator
 import eu.kanade.tachiyomi.data.backup.create.creators.ExtensionStoresBackupCreator
 import eu.kanade.tachiyomi.data.backup.create.creators.MangaBackupCreator
 import eu.kanade.tachiyomi.data.backup.create.creators.PreferenceBackupCreator
 import eu.kanade.tachiyomi.data.backup.create.creators.SourcesBackupCreator
 import eu.kanade.tachiyomi.data.backup.models.BackupCategory
+import eu.kanade.tachiyomi.data.backup.models.BackupExcerpt
 import eu.kanade.tachiyomi.data.backup.models.BackupExtensionStore
 import eu.kanade.tachiyomi.data.backup.models.BackupManga
 import eu.kanade.tachiyomi.data.backup.models.BackupPreference
@@ -49,6 +51,7 @@ class BackupCreator(
     private val sourceManager: tachiyomi.domain.source.service.SourceManager = Injekt.get(),
 
     private val categoriesBackupCreator: CategoriesBackupCreator = CategoriesBackupCreator(),
+    private val excerptsBackupCreator: ExcerptsBackupCreator = ExcerptsBackupCreator(),
     private val mangaBackupCreator: MangaBackupCreator = MangaBackupCreator(),
     private val preferenceBackupCreator: PreferenceBackupCreator = PreferenceBackupCreator(),
     private val extensionStoresBackupCreator: ExtensionStoresBackupCreator = ExtensionStoresBackupCreator(),
@@ -98,6 +101,7 @@ class BackupCreator(
             }
 
             val backupCategories = backupCategories(options)
+            val backupExcerpts = backupExcerpts(options)
             val backupAppPrefs = backupAppPreferences(options)
             val backupExtensionStores = backupExtensionStores(options)
             val backupSourcePrefs = backupSourcePreferences(options)
@@ -189,6 +193,11 @@ class BackupCreator(
                     val bytes = parser.encodeToByteArray(BackupExtensionStore.serializer(), er)
                     writeProtoField(gzipOut.outputStream(), 106, bytes)
                 }
+                // Field 107: backupExcerpts (repeated)
+                backupExcerpts.forEach { e ->
+                    val bytes = parser.encodeToByteArray(BackupExcerpt.serializer(), e)
+                    writeProtoField(gzipOut.outputStream(), 107, bytes)
+                }
 
                 gzipOut.flush()
             } finally {
@@ -239,6 +248,12 @@ class BackupCreator(
         if (!options.categories) return emptyList()
 
         return categoriesBackupCreator()
+    }
+
+    private suspend fun backupExcerpts(options: BackupOptions): List<BackupExcerpt> {
+        if (!options.libraryEntries) return emptyList()
+
+        return excerptsBackupCreator()
     }
 
     private fun backupAppPreferences(options: BackupOptions): List<BackupPreference> {

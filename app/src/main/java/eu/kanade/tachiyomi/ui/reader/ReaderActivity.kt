@@ -72,6 +72,7 @@ import eu.kanade.presentation.reader.ReaderContentOverlay
 import eu.kanade.presentation.reader.ReaderPageActionsDialog
 import eu.kanade.presentation.reader.ReaderPageIndicator
 import eu.kanade.presentation.reader.ReadingModeSelectDialog
+import eu.kanade.presentation.reader.SaveExcerptDialog
 import eu.kanade.presentation.reader.TranslationLanguageSelectDialog
 import eu.kanade.presentation.reader.appbars.BottomBarEditorSheet
 import eu.kanade.presentation.reader.appbars.BottomBarItem
@@ -537,7 +538,7 @@ class ReaderActivity : BaseActivity() {
         }
 
         val onDismissRequest = viewModel::closeDialog
-        when (state.dialog) {
+        when (val dialog = state.dialog) {
             is ReaderViewModel.Dialog.Loading -> {
                 AlertDialog(
                     onDismissRequest = {},
@@ -611,6 +612,20 @@ class ReaderActivity : BaseActivity() {
                     onSetAsCover = viewModel::setAsCover,
                     onShare = viewModel::shareImage,
                     onSave = viewModel::saveImage,
+                )
+            }
+            is ReaderViewModel.Dialog.SaveExcerpt -> {
+                val excerptCategories by viewModel.excerptCategories.collectAsState()
+                SaveExcerptDialog(
+                    draftText = dialog.draft.text,
+                    mangaTitle = dialog.draft.mangaTitle,
+                    chapterName = dialog.draft.chapterName,
+                    categories = excerptCategories,
+                    onDismissRequest = onDismissRequest,
+                    onSave = { category, note ->
+                        viewModel.saveExcerpt(category, note)
+                        toast(MR.strings.excerpt_vault_saved)
+                    },
                 )
             }
             null -> {}
@@ -2036,6 +2051,48 @@ class ReaderActivity : BaseActivity() {
                 }
             }
             toast("Quote saved!")
+        } else {
+            toast("No text selected")
+        }
+    }
+
+    /**
+     * Called when the "Save excerpt" action is triggered.
+     * Snapshots the selected text plus its novel/chapter context and opens the
+     * Excerpt Vault save dialog. Unlike quotes, the draft carries ids/urls so the
+     * vault can jump back to the source chapter while it is still available.
+     */
+    fun onSaveExcerptSelectedText() {
+        val selectedText = when (val viewer = viewModel.state.value.viewer) {
+            is NovelViewer -> viewer.getSelectedText()
+            is NovelWebViewViewer -> viewer.pendingSelectedText ?: viewer.getSelectedText()
+            else -> null
+        }
+        val manga = viewModel.manga
+        val chapter = viewModel.state.value.currentChapter?.chapter
+
+        if (!selectedText.isNullOrBlank() && manga != null && chapter != null) {
+            viewModel.openSaveExcerptDialog(
+                ReaderViewModel.ExcerptDraft(
+                    text = selectedText.trim(),
+                    mangaId = manga.id.takeIf { it > 0 },
+                    mangaTitle = manga.title,
+                    sourceId = manga.source,
+                    mangaUrl = manga.url,
+                    chapterId = chapter.id?.takeIf { it > 0 },
+                    chapterName = chapter.name,
+                    chapterNumber = chapter.chapter_number.toDouble(),
+                    chapterUrl = chapter.url,
+                ),
+            )
+            when (val viewer = viewModel.state.value.viewer) {
+                is NovelViewer -> viewer.clearTextSelection()
+                is NovelWebViewViewer -> {
+                    viewer.clearTextSelection()
+                    viewer.pendingSelectedText = null
+                    viewer.pendingParagraphIndex = null
+                }
+            }
         } else {
             toast("No text selected")
         }

@@ -1,0 +1,19 @@
+-- Excerpt Vault (issue #53): reader-kept passages with their novel and chapter.
+CREATE TABLE excerpts(
+    _id INTEGER NOT NULL PRIMARY KEY,
+    excerpt_text TEXT NOT NULL,
+    manga_title TEXT NOT NULL,
+    chapter_name TEXT NOT NULL,
+    chapter_number REAL NOT NULL DEFAULT -1,
+    manga_id INTEGER,
+    chapter_id INTEGER,
+    source_id INTEGER NOT NULL DEFAULT -1,
+    manga_url TEXT NOT NULL DEFAULT '',
+    chapter_url TEXT NOT NULL DEFAULT '',
+    category TEXT NOT NULL DEFAULT '',
+    note TEXT NOT NULL DEFAULT '',
+    created_at INTEGER NOT NULL
+);
+
+CREATE INDEX excerpts_created_at_index ON excerpts(created_at DESC);
+CREATE INDEX excerpts_category_index ON excerpts(category);

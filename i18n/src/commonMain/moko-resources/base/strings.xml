@@ -32,6 +32,7 @@
     <string name="label_backup">Backup and restore</string>
     <string name="label_data_storage">Data and storage</string>
     <string name="label_stats">Statistics</string>
+    <string name="label_excerpt_vault">Excerpt Vault</string>
     <string name="label_migration">Migrate</string>
     <string name="label_extensions">Extensions</string>
     <string name="label_extension_info">Extension info</string>
@@ -675,6 +676,20 @@
     <string name="pref_incognito_mode_extension_summary">Pause reading history for extension</string>
     <string name="notification_incognito_text">Disable incognito mode</string>
     <string name="downloaded_only_summary">Filters all entries in your library</string>
+
+    <!-- Excerpt Vault -->
+    <string name="excerpt_vault_empty">No excerpts saved yet. Select text in the reader and save it to the vault.</string>
+    <string name="excerpt_vault_search_hint">Search excerpts…</string>
+    <string name="excerpt_vault_all_categories">All</string>
+    <string name="excerpt_vault_delete_confirm">Delete this excerpt?</string>
+    <string name="excerpt_vault_deleted">Excerpt deleted</string>
+    <string name="excerpt_vault_saved">Excerpt saved to vault</string>
+    <string name="excerpt_vault_save_title">Save excerpt</string>
+    <string name="excerpt_vault_category_label">Category</string>
+    <string name="excerpt_vault_category_hint">e.g. funny, wisdom…</string>
+    <string name="excerpt_vault_note_label">Note (optional)</string>
+    <string name="excerpt_vault_open_chapter">Open chapter</string>
+    <string name="excerpt_vault_chapter_unavailable">Chapter is no longer available</string>
 
 
     <!-- Login dialog -->

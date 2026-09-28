@@ -6,12 +6,14 @@ import eu.kanade.tachiyomi.data.backup.BackupNotifier
 import eu.kanade.tachiyomi.data.backup.BackupProtoMigration
 import eu.kanade.tachiyomi.data.backup.BackupProtoReader
 import eu.kanade.tachiyomi.data.backup.models.BackupCategory
+import eu.kanade.tachiyomi.data.backup.models.BackupExcerpt
 import eu.kanade.tachiyomi.data.backup.models.BackupExtensionStore
 import eu.kanade.tachiyomi.data.backup.models.BackupManga
 import eu.kanade.tachiyomi.data.backup.models.BackupPreference
 import eu.kanade.tachiyomi.data.backup.models.BackupSource
 import eu.kanade.tachiyomi.data.backup.models.BackupSourcePreferences
 import eu.kanade.tachiyomi.data.backup.restore.restorers.CategoriesRestorer
+import eu.kanade.tachiyomi.data.backup.restore.restorers.ExcerptsRestorer
 import eu.kanade.tachiyomi.data.backup.restore.restorers.ExtensionStoreRestorer
 import eu.kanade.tachiyomi.data.backup.restore.restorers.MangaRestorer
 import eu.kanade.tachiyomi.data.backup.restore.restorers.PreferenceRestorer
@@ -47,6 +49,7 @@ class BackupRestorer(
 
     private val database: Database = Injekt.get(),
     private val categoriesRestorer: CategoriesRestorer = CategoriesRestorer(),
+    private val excerptsRestorer: ExcerptsRestorer = ExcerptsRestorer(),
     private val preferenceRestorer: PreferenceRestorer = PreferenceRestorer(context),
     private val extensionStoreRestorer: ExtensionStoreRestorer = ExtensionStoreRestorer(),
     private val mangaRestorer: MangaRestorer = MangaRestorer(),
@@ -116,6 +119,9 @@ class BackupRestorer(
         if (options.libraryEntries) {
             restoreAmount += summary.mangaCount
         }
+        if (options.libraryEntries && summary.backupExcerpts.isNotEmpty()) {
+            restoreAmount += 1
+        }
         if (options.categories) {
             restoreAmount += 1
         }
@@ -149,6 +155,9 @@ class BackupRestorer(
             if (options.libraryEntries) {
                 restoreMangaStream(uri, if (options.categories) summary.backupCategories else emptyList(), options)
             }
+            if (options.libraryEntries && summary.backupExcerpts.isNotEmpty()) {
+                restoreExcerpts(summary.backupExcerpts)
+            }
             if (options.extensionStores) {
                 restoreExtensionStores(summary.backupExtensionStores)
             }
@@ -163,6 +172,7 @@ class BackupRestorer(
         val backupPreferences = mutableListOf<BackupPreference>()
         val backupSourcePreferences = mutableListOf<BackupSourcePreferences>()
         val backupExtensionStores = mutableListOf<BackupExtensionStore>()
+        val backupExcerpts = mutableListOf<BackupExcerpt>()
         var mangaCount = 0
 
         val reader = BackupProtoReader(context)
@@ -181,6 +191,7 @@ class BackupRestorer(
                         BackupProtoMigration.migrateExtensionStore(data),
                     ),
                 )
+                107 -> backupExcerpts.add(parser.decodeFromByteArray(BackupExcerpt.serializer(), data))
             }
         }
 
@@ -191,6 +202,7 @@ class BackupRestorer(
             backupPreferences = backupPreferences,
             backupSourcePreferences = backupSourcePreferences,
             backupExtensionStores = backupExtensionStores,
+            backupExcerpts = backupExcerpts,
         )
     }
 
@@ -231,7 +243,21 @@ class BackupRestorer(
         val backupPreferences: List<BackupPreference>,
         val backupSourcePreferences: List<BackupSourcePreferences>,
         val backupExtensionStores: List<BackupExtensionStore>,
+        val backupExcerpts: List<BackupExcerpt>,
     )
+
+    private fun CoroutineScope.restoreExcerpts(backupExcerpts: List<BackupExcerpt>) = launch {
+        ensureActive()
+        excerptsRestorer(backupExcerpts)
+
+        val progress = restoreProgress.incrementAndFetch()
+        notifier.showRestoreProgress(
+            context.stringResource(MR.strings.label_excerpt_vault),
+            progress,
+            restoreAmount,
+            isSync,
+        )
+    }
 
     private fun CoroutineScope.restoreCategories(backupCategories: List<BackupCategory>) = launch {
         ensureActive()

@@ -731,6 +731,14 @@ class NovelViewer(val activity: ReaderActivity) : Viewer {
                         )
                         rememberItem.setIcon(android.R.drawable.ic_menu_save)
                         rememberItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM)
+                        val excerptItem = menu.add(
+                            Menu.NONE,
+                            2,
+                            Menu.NONE,
+                            activity.stringResource(TDMR.strings.action_save_excerpt),
+                        )
+                        excerptItem.setIcon(android.R.drawable.ic_menu_save)
+                        excerptItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM)
                         return true
                     }
 
@@ -742,6 +750,11 @@ class NovelViewer(val activity: ReaderActivity) : Viewer {
                         return when (item.itemId) {
                             1 -> {
                                 onRememberSelectedText()
+                                mode.finish()
+                                true
+                            }
+                            2 -> {
+                                onSaveExcerptSelectedText()
                                 mode.finish()
                                 true
                             }
@@ -2171,6 +2184,15 @@ class NovelViewer(val activity: ReaderActivity) : Viewer {
 
         if (selectedText != null && chapterName != null) {
             activity.onRememberSelectedText()
+            clearTextSelection()
+        } else {
+            activity.toast("No text selected")
+        }
+    }
+
+    private fun onSaveExcerptSelectedText() {
+        if (getSelectedText() != null) {
+            activity.onSaveExcerptSelectedText()
             clearTextSelection()
         } else {
             activity.toast("No text selected")
