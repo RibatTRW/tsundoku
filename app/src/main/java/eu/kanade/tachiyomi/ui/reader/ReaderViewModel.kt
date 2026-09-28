@@ -96,9 +96,9 @@ import tachiyomi.domain.chapter.interactor.UpdateChapter
 import tachiyomi.domain.chapter.model.ChapterUpdate
 import tachiyomi.domain.chapter.service.getChapterSort
 import tachiyomi.domain.download.service.DownloadPreferences
-import tachiyomi.domain.history.interactor.GetNextChapters
 import tachiyomi.domain.excerpt.model.Excerpt
 import tachiyomi.domain.excerpt.repository.ExcerptRepository
+import tachiyomi.domain.history.interactor.GetNextChapters
 import tachiyomi.domain.history.interactor.UpsertHistory
 import tachiyomi.domain.history.model.HistoryUpdate
 import tachiyomi.domain.library.service.LibraryPreferences
