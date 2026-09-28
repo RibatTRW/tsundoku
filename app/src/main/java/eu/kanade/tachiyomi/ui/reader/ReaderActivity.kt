@@ -375,6 +375,9 @@ class ReaderActivity : BaseActivity() {
                     is ReaderViewModel.Event.SetCoverResult -> {
                         onSetAsCoverResult(event.result)
                     }
+                    is ReaderViewModel.Event.SaveExcerpt -> {
+                        onSaveExcerptResult(event.result)
+                    }
                 }
             }
             .launchIn(lifecycleScope)
@@ -624,7 +627,6 @@ class ReaderActivity : BaseActivity() {
                     onDismissRequest = onDismissRequest,
                     onSave = { category, note ->
                         viewModel.saveExcerpt(category, note)
-                        toast(MR.strings.excerpt_vault_saved)
                     },
                 )
             }
@@ -1993,6 +1995,18 @@ class ReaderActivity : BaseActivity() {
             }
             is ReaderViewModel.SaveImageResult.Error -> {
                 logcat(LogPriority.ERROR, result.error)
+            }
+        }
+    }
+
+    private fun onSaveExcerptResult(result: ReaderViewModel.SaveExcerptResult) {
+        when (result) {
+            is ReaderViewModel.SaveExcerptResult.Success -> {
+                toast(MR.strings.excerpt_vault_saved)
+            }
+            is ReaderViewModel.SaveExcerptResult.Error -> {
+                logcat(LogPriority.ERROR, result.error)
+                toast(result.error.message)
             }
         }
     }

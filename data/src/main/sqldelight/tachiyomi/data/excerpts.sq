@@ -36,6 +36,7 @@ FROM excerpts
 WHERE excerpt_text LIKE ('%' || :query || '%') ESCAPE '\'
 OR manga_title LIKE ('%' || :query || '%') ESCAPE '\'
 OR chapter_name LIKE ('%' || :query || '%') ESCAPE '\'
+OR category LIKE ('%' || :query || '%') ESCAPE '\'
 OR note LIKE ('%' || :query || '%') ESCAPE '\'
 ORDER BY created_at DESC;
 

@@ -1551,6 +1551,11 @@ class ReaderViewModel @JvmOverloads constructor(
         class Error(val error: Throwable) : SaveImageResult
     }
 
+    sealed interface SaveExcerptResult {
+        data object Success : SaveExcerptResult
+        data class Error(val error: Throwable) : SaveExcerptResult
+    }
+
     /**
      * Starts the service that updates the last chapter read in sync services. This operation
      * will run in a background thread and errors are ignored.
@@ -1854,24 +1859,32 @@ class ReaderViewModel @JvmOverloads constructor(
 
     fun saveExcerpt(category: String, note: String) {
         val draft = (state.value.dialog as? Dialog.SaveExcerpt)?.draft ?: return
-        viewModelScope.launchIO {
-            excerptRepository.insert(
-                Excerpt.create(
-                    text = draft.text,
-                    mangaTitle = draft.mangaTitle,
-                    chapterName = draft.chapterName,
-                    chapterNumber = draft.chapterNumber,
-                    mangaId = draft.mangaId,
-                    chapterId = draft.chapterId,
-                    sourceId = draft.sourceId,
-                    mangaUrl = draft.mangaUrl,
-                    chapterUrl = draft.chapterUrl,
-                    category = category.trim(),
-                    note = note.trim(),
-                ),
-            )
-        }
         closeDialog()
+        viewModelScope.launchNonCancellable {
+            try {
+                excerptRepository.insert(
+                    Excerpt.create(
+                        text = draft.text,
+                        mangaTitle = draft.mangaTitle,
+                        chapterName = draft.chapterName,
+                        chapterNumber = draft.chapterNumber,
+                        mangaId = draft.mangaId,
+                        chapterId = draft.chapterId,
+                        sourceId = draft.sourceId,
+                        mangaUrl = draft.mangaUrl,
+                        chapterUrl = draft.chapterUrl,
+                        category = category.trim(),
+                        note = note.trim(),
+                    ),
+                )
+                eventChannel.send(Event.SaveExcerpt(SaveExcerptResult.Success))
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Throwable) {
+                logcat(LogPriority.ERROR, e)
+                eventChannel.send(Event.SaveExcerpt(SaveExcerptResult.Error(e)))
+            }
+        }
     }
 
     /**
@@ -1911,5 +1924,6 @@ class ReaderViewModel @JvmOverloads constructor(
         data class SavedImage(val result: SaveImageResult) : Event
         data class ShareImage(val uri: Uri, val page: ReaderPage) : Event
         data class CopyImage(val uri: Uri) : Event
+        data class SaveExcerpt(val result: SaveExcerptResult) : Event
     }
 }
