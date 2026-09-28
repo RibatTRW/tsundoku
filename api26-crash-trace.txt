@@ -1,0 +1,17 @@
+E/AndroidRuntime( 8138): FATAL EXCEPTION: main
+E/AndroidRuntime( 8138): Process: app.tsundoku, PID: 8138
+E/AndroidRuntime( 8138): java.lang.NoClassDefFoundError: Failed resolution of: Landroid/text/PrecomputedText;
+E/AndroidRuntime( 8138): 	at androidx.compose.foundation.MarqueeSpacing$Companion$$ExternalSyntheticLambda0.m$1(r8-map-id-630619145f1d0c570b5c5084834deb6b53a78a7e15688d320b48c948e7941e87:4)
+E/AndroidRuntime( 8138): 	at eu.kanade.tachiyomi.ui.reader.viewer.text.textview.NovelViewer.applyTextViewStyles(r8-map-id-630619145f1d0c570b5c5084834deb6b53a78a7e15688d320b48c948e7941e87:546)
+E/AndroidRuntime( 8138): 	at eu.kanade.tachiyomi.ui.reader.viewer.text.textview.NovelViewer$$ExternalSyntheticLambda0.invoke(r8-map-id-630619145f1d0c570b5c5084834deb6b53a78a7e15688d320b48c948e7941e87:
+E/AndroidRuntime( 8138): 	at eu.kanade.tachiyomi.ui.reader.viewer.text.textview.NovelTextRenderer$render$1.invokeSuspend(r8-map-id-630619145f1d0c570b5c5084834deb6b53a78a7e15688d320b48c948e7941e87:333)
+E/AndroidRuntime( 8138): 	at kotlin.coroutines.jvm.internal.BaseContinuationImpl.resumeWith(r8-map-id-630619145f1d0c570b5c5084834deb6b53a78a7e15688d320b48c948e7941e87:8)
+E/AndroidRuntime( 8138): 	at kotlinx.coroutines.DispatchedTask.run(r8-map-id-630619145f1d0c570b5c5084834deb6b53a78a7e15688d320b48c948e7941e87:108)
+E/AndroidRuntime( 8138): 	at android.os.Handler.handleCallback(Handler.java:789)
+E/AndroidRuntime( 8138): 	at android.os.Handler.dispatchMessage(Handler.java:98)
+E/AndroidRuntime( 8138): 	at android.os.Looper.loop(Looper.java:164)
+E/AndroidRuntime( 8138): 	at android.app.ActivityThread.main(ActivityThread.java:6541)
+E/AndroidRuntime( 8138): 	at java.lang.reflect.Method.invoke(Native Method)
+E/AndroidRuntime( 8138): 	at com.android.internal.os.Zygote$MethodAndArgsCaller.run(Zygote.java:240)
+E/AndroidRuntime( 8138): 	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:767)
+E/AndroidRuntime( 8138): Caused by: java.lang.ClassNotFoundException: Didn't find class "android.text.PrecomputedText" on path: DexPathList[[zip file "/data/app/app.tsundoku-9dComQ_6vu9qZn5OxUHBHA==/b
