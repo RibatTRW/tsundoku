@@ -12,10 +12,10 @@ The format is a modified version of [Keep a Changelog](https://keepachangelog.co
 
 ## [Unreleased]
 ### Added
-- Excerpt Vault: save passages from the novel reader, with novel and chapter, to a searchable, backed-up section under More [#53](https://github.com/tsundoku-otaku/tsundoku/issues/53)
 - Webview paged reader [@mrissaoussama](https://github.com/mrissaoussama) [#420](https://github.com/tsundoku-otaku/tsundoku/pull/420)
 - Search text (optionally regex) across all downloaded chapters of an entry [@RibatTRW](https://github.com/RibatTRW) [#433](https://github.com/tsundoku-otaku/tsundoku/issues/433)
 - Word count and word density indicator for downloaded novel chapters [@RibatTRW](https://github.com/RibatTRW) [#434](https://github.com/tsundoku-otaku/tsundoku/pull/434)
+- Excerpt Vault: save passages from the novel reader, with novel and chapter, to a searchable, backed-up section under More [@RibatTRW](https://github.com/RibatTRW) [#430](https://github.com/tsundoku-otaku/tsundoku/pull/430)
 
 
 ### Improved

@@ -958,6 +958,12 @@
     <string name="action_quotes">Quotes</string>
     <string name="action_remember">Remember</string>
     <string name="action_save_excerpt">Save excerpt</string>
+    <string name="label_excerpt_vault">Excerpt Vault</string>
+    <string name="excerpt_vault_empty">No excerpts saved yet. Select text in the reader and save it to the vault.</string>
+    <string name="excerpt_vault_delete_confirm">Delete this excerpt?</string>
+    <string name="excerpt_vault_saved">Excerpt saved to vault</string>
+    <string name="excerpt_vault_open_chapter">Open chapter</string>
+    <string name="excerpt_vault_chapter_unavailable">Chapter is no longer available</string>
     <string name="quotes_empty">No quotes saved for this novel</string>
     <string name="quotes_delete_confirm">Delete this quote?</string>
     <string name="quotes_saved">Quote saved</string>

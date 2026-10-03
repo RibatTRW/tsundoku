@@ -134,6 +134,7 @@ import tachiyomi.core.common.util.lang.launchIO
 import tachiyomi.core.common.util.lang.launchNonCancellable
 import tachiyomi.core.common.util.system.logcat
 import tachiyomi.i18n.MR
+import tachiyomi.i18n.novel.TDMR
 import tachiyomi.presentation.core.util.collectAsState
 import uy.kohesive.injekt.Injekt
 import uy.kohesive.injekt.api.get
@@ -376,7 +377,7 @@ class ReaderActivity : BaseActivity() {
                     }
                     is ReaderViewModel.Event.ExcerptSaved -> {
                         if (event.error == null) {
-                            toast(MR.strings.excerpt_vault_saved)
+                            toast(TDMR.strings.excerpt_vault_saved)
                         } else {
                             toast(event.error.message?.ifBlank { null } ?: stringResource(MR.strings.unknown_error))
                         }

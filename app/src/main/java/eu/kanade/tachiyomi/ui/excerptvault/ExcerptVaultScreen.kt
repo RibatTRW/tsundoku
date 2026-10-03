@@ -39,6 +39,7 @@ import eu.kanade.tachiyomi.util.system.toast
 import kotlinx.coroutines.launch
 import tachiyomi.domain.excerpt.model.Excerpt
 import tachiyomi.i18n.MR
+import tachiyomi.i18n.novel.TDMR
 import tachiyomi.presentation.core.components.ScrollbarLazyColumn
 import tachiyomi.presentation.core.components.material.Scaffold
 import tachiyomi.presentation.core.i18n.stringResource
@@ -62,7 +63,7 @@ class ExcerptVaultScreen : Screen() {
         Scaffold(
             topBar = { scrollBehavior ->
                 SearchToolbar(
-                    titleContent = { AppBarTitle(stringResource(MR.strings.label_excerpt_vault)) },
+                    titleContent = { AppBarTitle(stringResource(TDMR.strings.label_excerpt_vault)) },
                     searchQuery = query,
                     onChangeSearchQuery = { query = it },
                     navigateUp = navigator::pop,
@@ -84,7 +85,7 @@ class ExcerptVaultScreen : Screen() {
             }
             if (visible.isEmpty()) {
                 EmptyScreen(
-                    stringRes = if (q.isEmpty()) MR.strings.excerpt_vault_empty else MR.strings.no_results_found,
+                    stringRes = if (q.isEmpty()) TDMR.strings.excerpt_vault_empty else MR.strings.no_results_found,
                     modifier = Modifier.padding(paddingValues),
                 )
                 return@Scaffold
@@ -104,7 +105,7 @@ class ExcerptVaultScreen : Screen() {
                                     null
                                 }
                                 if (ids == null) {
-                                    context.toast(MR.strings.excerpt_vault_chapter_unavailable)
+                                    context.toast(TDMR.strings.excerpt_vault_chapter_unavailable)
                                 } else {
                                     context.startActivity(ReaderActivity.newIntent(context, ids.first, ids.second))
                                 }
@@ -119,7 +120,7 @@ class ExcerptVaultScreen : Screen() {
         toDelete?.let { excerpt ->
             AlertDialog(
                 onDismissRequest = { toDelete = null },
-                title = { Text(stringResource(MR.strings.excerpt_vault_delete_confirm)) },
+                title = { Text(stringResource(TDMR.strings.excerpt_vault_delete_confirm)) },
                 confirmButton = {
                     TextButton(
                         onClick = {
@@ -156,7 +157,7 @@ private fun ExcerptCard(
                     modifier = Modifier.weight(1f),
                 )
                 TextButton(onClick = onOpen) {
-                    Text(stringResource(MR.strings.excerpt_vault_open_chapter))
+                    Text(stringResource(TDMR.strings.excerpt_vault_open_chapter))
                 }
                 IconButton(onClick = onDelete) {
                     Icon(Icons.Outlined.Delete, contentDescription = stringResource(MR.strings.action_delete))
